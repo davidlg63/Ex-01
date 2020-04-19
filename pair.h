@@ -13,10 +13,11 @@ typedef enum pair_result_t
 {
     PAIR_SUCCESS,
     PAIR_OUT_OF_MEMORY,
-    PAIR_NULL_ARGUMENT
 }PairResult;
 
 Pair pairGetNext(Pair current_pair);
+
+Pair pairGetPrevious(Pair current_pair);
 
 char* pairGetKey(Pair pair);
 
@@ -24,7 +25,7 @@ char* pairGetData(Pair pair);
 
 void pairRemove(Pair pair);
 
-Pair pairCreate(Map map, const char* key, const char* data);
+Pair pairCreate(Map map, Pair last_pair, const char* key, const char* data);
 
 PairResult pairSetData(Pair pair, const char* new_data);
 

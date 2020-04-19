@@ -21,7 +21,7 @@ static void mapReset(Map map);
 
 struct Map_t
 {
-    Pair current_pair;
+    Pair last_pair;
     Pair first_pair;
     char* iterator;
     int num_of_elements;
@@ -88,6 +88,16 @@ MapResult mapRemove(Map map, const char* key) {
     {
         return MAP_ITEM_DOES_NOT_EXIST;
     }
+    if(pair_to_remove == map->first_pair)
+    {
+        map->first_pair = pairGetNext(map->first_pair);
+    }
+
+    else if(pair_to_remove == map->last_pair)
+    {
+        map->last_pair = pairGetPrevious(map->last_pair);
+    }
+
     pairRemove(pair_to_remove);
     return MAP_SUCCESS;
 }
@@ -128,13 +138,20 @@ MapResult mapPut(Map map, const char* key, const char* data) {
     Pair temp = findPair(map, key);
     if(temp != NULL)
     {
-        pairSetData(temp, data);
-        return MAP_SUCCESS;
+        if(pairSetData(temp, data) == PAIR_OUT_OF_MEMORY)
+        {
+            return MAP_OUT_OF_MEMORY;
+        }
+
+        else
+        {
+            return MAP_SUCCESS;
+        }
     }
 
     else
     {
-        temp = pairCreate(map, key, data);
+        temp = pairCreate(map, map->last_pair, key, data);
 
         if(temp == NULL)
         {
@@ -146,7 +163,7 @@ MapResult mapPut(Map map, const char* key, const char* data) {
             map->first_pair = temp;
             map->iterator = pairGetKey(temp);
         }
-        map->current_pair = temp;
+        map->last_pair = temp;
         map->num_of_elements++;
         return MAP_SUCCESS;
     }
@@ -209,6 +226,6 @@ static Pair findPair(Map map, const char* key) {
 static void mapReset(Map map)
 {
     map->first_pair = NULL;
-    map->current_pair = NULL;
+    map->last_pair = NULL;
     map->iterator = NULL;
 }
