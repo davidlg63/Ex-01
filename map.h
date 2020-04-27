@@ -189,7 +189,7 @@ MapResult mapClear(Map map);
 
 #define MAP_FOREACH(iterator, map) \
     for(char* iterator = (char*) mapGetFirst(map) ; \
-        iterator ;\
+        iterator != NULL ;\
         iterator = mapGetNext(map))
 
 #endif /* MAP_H_ */

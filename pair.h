@@ -25,7 +25,7 @@ char* pairGetData(Pair pair);
 
 void pairRemove(Pair pair);
 
-Pair pairCreate(Map map, Pair last_pair, const char* key, const char* data);
+Pair pairCreate(Pair last_pair, const char* key, const char* data);
 
 PairResult pairSetData(Pair pair, const char* new_data);
 

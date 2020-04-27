@@ -7,6 +7,7 @@
 #include "pair.h"
 #include <stdlib.h>
 #include <assert.h>
+#include <stdio.h>
 ///////////////////////////////////////////
 
 //Defines:
@@ -43,11 +44,16 @@ void mapDestroy(Map map) {
     {
         return;
     }
-
+    mapReset(map);
     free(map);
+    map = NULL;
 }
 
 Map mapCopy(Map map) {
+    if(map == NULL)
+    {
+        return  NULL;
+    }
     Map copy_map = mapCreate();
     if(copy_map == NULL)
     {
@@ -90,15 +96,14 @@ MapResult mapRemove(Map map, const char* key) {
     }
     if(pair_to_remove == map->first_pair)
     {
-        map->first_pair = pairGetNext(map->first_pair);
+        map->first_pair = pairGetNext(pair_to_remove);
     }
-
-    else if(pair_to_remove == map->last_pair)
+    if(pair_to_remove == map->last_pair)
     {
-        map->last_pair = pairGetPrevious(map->last_pair);
+        map->last_pair = pairGetPrevious(pair_to_remove);
     }
-
     pairRemove(pair_to_remove);
+    map->num_of_elements--;
     return MAP_SUCCESS;
 }
 
@@ -112,6 +117,7 @@ bool mapContains(Map map, const char* key) {
 }
 
 char* mapGet(Map map, const char* key) {
+
     if(key == NULL|| map == NULL)
     {
         return  NULL;
@@ -124,6 +130,8 @@ char* mapGet(Map map, const char* key) {
     }
     else
     {
+        assert(temp != NULL);
+
         return pairGetData(temp);
     }
 }
@@ -136,7 +144,8 @@ MapResult mapPut(Map map, const char* key, const char* data) {
     }
 
     Pair temp = findPair(map, key);
-    if(temp != NULL)
+
+    if(temp != NULL)//temp already exists in map
     {
         if(pairSetData(temp, data) == PAIR_OUT_OF_MEMORY)
         {
@@ -151,7 +160,7 @@ MapResult mapPut(Map map, const char* key, const char* data) {
 
     else
     {
-        temp = pairCreate(map, map->last_pair, key, data);
+        temp = pairCreate(map->last_pair, key, data);
 
         if(temp == NULL)
         {
@@ -165,6 +174,7 @@ MapResult mapPut(Map map, const char* key, const char* data) {
         }
         map->last_pair = temp;
         map->num_of_elements++;
+
         return MAP_SUCCESS;
     }
 
@@ -180,14 +190,14 @@ char* mapGetFirst(Map map) {
 }
 
 char* mapGetNext(Map map) {
-    assert(map->iterator == NULL);
+    assert(map->iterator != NULL);
     Pair current = findPair(map, map->iterator);
     Pair next = pairGetNext(current);
     if(next == NULL)
     {
-        return  NULL;
+        return NULL;
     }
-
+    map->iterator = pairGetKey(next);
     return  pairGetKey(next);
 }
 
@@ -212,12 +222,22 @@ MapResult mapClear(Map map) {
 
 
 static Pair findPair(Map map, const char* key) {
+    if(map == NULL || key == NULL)
+    {
+        return  NULL;
+    }
     Pair temp = map->first_pair;
     for (int i = 0; i < map->num_of_elements; ++i) {
+        assert(temp != NULL);
+        //printf("key: %s\n", key);
+        //printf("pair.Key = %s par.Data = ?\n",pairGetKey(map->first_pair));
+
+
         if (strcmp(key, pairGetKey(temp)) == 0) {
             return temp;
         }
-
+        else
+           // printf("Elad and David: %d\n", strcmp(key, pairGetKey(temp)));
         temp = pairGetNext(temp);
     }
     return NULL;
