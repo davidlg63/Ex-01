@@ -1,0 +1,109 @@
+//
+// Created by David on 18/04/2020.
+//
+
+#ifndef PAIR_H
+#define PAIR_H
+
+#include "map.h"
+
+
+/**
+ *
+ * Implements a pair container type.
+ * The type of the key and the data is string (char*).
+ *
+ *  The following functions are available:
+ *      pairGetNext     - Returns a pointer to the next pair
+ *      pairGetPrevious - Returns a pointer to the previous pair
+ *      pairGetKey      - Returns the key value of the current pair
+ *      pairGetData     - Returns the data value of the current pair
+ *      pairRemove      - Removes a pair of (key,data) elements for which the key
+ *                         matches a given pointer.
+ *      pairCreate      - Creates a new pair struct and inserts the key and date given.
+ *      pairsetData     - Changes the data value of the pair matching the key given by
+ *                        the user (using the strcmp function).
+ */
+
+/** Type for defining the pair*/
+typedef  struct  pair_t* Pair;
+
+/** Type used for returning error codes from pair functions */
+typedef enum pair_result_t
+{
+    PAIR_SUCCESS,
+    PAIR_OUT_OF_MEMORY,
+}PairResult;
+
+/**
+ * pairGetNext: Returns a pointer to the next pair.
+ *
+ * @param current_pair - The pointer to the current pair struct
+ * @return
+ * A pointer to te next pair struct.
+ */
+Pair pairGetNext(Pair current_pair);
+
+/**
+ * pairGetPrevious: Return a pointer to the previous pair
+ *
+ * @param current_pair - The pointer to the current pair struct.
+ * @return
+ * Pointer to te previous pair struct.
+ */
+Pair pairGetPrevious(Pair current_pair);
+
+/**
+ *pairGetKey:  Return the value of key that associated with a specific pair(not a copy).
+ *
+ * @param pair - Pointer to the requested pair (the one whose key we will return).
+ * @return
+ * Pointer to the key associated with the pointer the function receives.
+ */
+char* pairGetKey(Pair pair);
+
+/**
+ * pairGetKey:  Return the value of data that associated with specific pair(not a copy).
+ *
+ * @param pair - Pointer to the requested pair (the one whose data we will return).
+ * @return
+ * Pointer to the data associated with the pointer the function receives.
+ */
+char* pairGetData(Pair pair);
+
+/**
+ * pairRemove:  Removes and free the pair that associated with the pointer the function ,receives
+ *              from the user. The function will link between the previous pair and the next one,
+ *              and if one of them doesn't exist (the pair is the first or the last) it will change the
+ *              relevant field to NULL.
+ *
+ * @param pair - Pointer to the requested pair to free.
+ */
+void pairRemove(Pair pair);
+
+/**
+ * pairCreate:  Allocate the memory required to a struct pair, than the function will
+ *              create pointers to the key and data values given by the user, and link
+ *              the pair with the previous one(if exists).
+ *
+ * @param last_pair - The pointer to the last pair allocated by the user.
+ * @param key - The key value given by the user to be inserted to the pair.
+ * @param data - The data value given by the user to be inserted to the pair.
+ * @return
+ * NULL- If memory allocation failed, or if the data or key values given by the users are NULL themselves.
+ * Pointer to the pair created by the function.
+ */
+Pair pairCreate( Pair last_pair, const char* key, const char* data);
+
+/**
+ * pairSetData: This function will change the value of the data linked with the key to a new data given by the user.
+ *              it will use the strlen function and will allocate memory in the size of the old and new data elements.
+ * @param pair - Poonter to the pair in which the data will be changed
+ * @param new_data - The new data to be linked with the key, it will be given by the user.
+ * @return
+ * PAIR_OUT_OF_MEMORY if one of the memory allocation failed
+ * PAIR_SUCCESS if the data was changed successfully.
+ */
+PairResult pairSetData(Pair pair, const char* new_data);
+
+#endif //PAIR_H
