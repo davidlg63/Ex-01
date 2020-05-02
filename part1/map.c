@@ -4,7 +4,7 @@
 
 //Include:
 #include "map.h"
-#include "pair.h"
+#include "node.h"
 #include <stdlib.h>
 #include <assert.h>
 #include <stdio.h>
@@ -15,15 +15,15 @@
 /*............................*/
 
 //Function declaration:
-static Pair findPair(Map map, const char* key);
+static Node findNode(Map map, const char* key);
 static void mapReset(Map map);
 /*................................................*/
 
 
 struct Map_t
 {
-    Pair last_pair;
-    Pair first_pair;
+    Node last_node;
+    Node first_node;
     char* iterator;
     int num_of_elements;
 };
@@ -59,18 +59,18 @@ Map mapCopy(Map map) {
     {
         return  NULL;
     }
-    Pair pair_counter = map->first_pair;
-    while(pair_counter != NULL)
+    Node node_counter = map->first_node;
+    while(node_counter != NULL)
     {
-        MapResult pair_copy_result = mapPut(copy_map, pairGetKey(pair_counter), pairGetData(pair_counter));
-        if(pair_copy_result == MAP_NULL_ARGUMENT || pair_copy_result == MAP_OUT_OF_MEMORY)
+        MapResult node_copy_result = mapPut(copy_map, nodeGetKey(node_counter), nodeGetData(node_counter));
+        if(node_copy_result == MAP_NULL_ARGUMENT || node_copy_result == MAP_OUT_OF_MEMORY)
         {
             mapDestroy(copy_map);
             return  NULL;
         }
         else
         {
-            pair_counter = pairGetNext(pair_counter);
+            node_counter = nodeGetNext(node_counter);
         }
     }
     return  copy_map;
@@ -89,26 +89,26 @@ MapResult mapRemove(Map map, const char* key) {
     {
         return  MAP_NULL_ARGUMENT;
     }
-    Pair pair_to_remove = findPair(map, key);
-    if(pair_to_remove == NULL)
+    Node node_to_remove = findNode(map, key);
+    if(node_to_remove == NULL)
     {
         return MAP_ITEM_DOES_NOT_EXIST;
     }
-    if(pair_to_remove == map->first_pair)
+    if(node_to_remove == map->first_node)
     {
-        map->first_pair = pairGetNext(pair_to_remove);
+        map->first_node = nodeGetNext(node_to_remove);
     }
-    if(pair_to_remove == map->last_pair)
+    if(node_to_remove == map->last_node)
     {
-        map->last_pair = pairGetPrevious(pair_to_remove);
+        map->last_node = nodeGetPrevious(node_to_remove);
     }
-    pairRemove(pair_to_remove);
+    nodeRemove(node_to_remove);
     map->num_of_elements--;
     return MAP_SUCCESS;
 }
 
 bool mapContains(Map map, const char* key) {
-    if(findPair(map, key) == NULL)
+    if(findNode(map, key) == NULL)
     {
         return false;
     }
@@ -123,7 +123,7 @@ char* mapGet(Map map, const char* key) {
         return  NULL;
     }
 
-    Pair temp = findPair(map, key);
+    Node temp = findNode(map, key);
     if(temp == NULL)
     {
         return  NULL;
@@ -132,7 +132,7 @@ char* mapGet(Map map, const char* key) {
     {
         assert(temp != NULL);
 
-        return pairGetData(temp);
+        return nodeGetData(temp);
     }
 }
 
@@ -143,11 +143,11 @@ MapResult mapPut(Map map, const char* key, const char* data) {
         return  MAP_NULL_ARGUMENT;
     }
 
-    Pair temp = findPair(map, key);
+    Node temp = findNode(map, key);
 
     if(temp != NULL)//temp already exists in map
     {
-        if(pairSetData(temp, data) == PAIR_OUT_OF_MEMORY)
+        if(nodeSetData(temp, data) == NODE_OUT_OF_MEMORY)
         {
             return MAP_OUT_OF_MEMORY;
         }
@@ -160,19 +160,19 @@ MapResult mapPut(Map map, const char* key, const char* data) {
 
     else
     {
-        temp = pairCreate(map->last_pair, key, data);
+        temp = nodeCreate(map->last_node, key, data);
 
         if(temp == NULL)
         {
             return  MAP_OUT_OF_MEMORY;
         }
 
-        if(map->first_pair == NULL)// if temp is the first key-data pair added, then we assign first_pair to temp.
+        if(map->first_node == NULL)// if temp is the first key-data node added, then we assign first_node to temp.
         {
-            map->first_pair = temp;
-            map->iterator = pairGetKey(temp);
+            map->first_node = temp;
+            map->iterator = nodeGetKey(temp);
         }
-        map->last_pair = temp;
+        map->last_node = temp;
         map->num_of_elements++;
 
         return MAP_SUCCESS;
@@ -181,24 +181,24 @@ MapResult mapPut(Map map, const char* key, const char* data) {
 }
 
 char* mapGetFirst(Map map) {
-    if(map == NULL || map->first_pair == NULL)
+    if(map == NULL || map->first_node == NULL)
     {
         return  NULL;
     }
-    map->iterator = pairGetKey(map->first_pair);
-    return pairGetKey(map->first_pair);
+    map->iterator = nodeGetKey(map->first_node);
+    return nodeGetKey(map->first_node);
 }
 
 char* mapGetNext(Map map) {
     assert(map->iterator != NULL);
-    Pair current = findPair(map, map->iterator);
-    Pair next = pairGetNext(current);
+    Node current = findNode(map, map->iterator);
+    Node next = nodeGetNext(current);
     if(next == NULL)
     {
         return NULL;
     }
-    map->iterator = pairGetKey(next);
-    return  pairGetKey(next);
+    map->iterator = nodeGetKey(next);
+    return  nodeGetKey(next);
 }
 
 MapResult mapClear(Map map) {
@@ -208,11 +208,11 @@ MapResult mapClear(Map map) {
         return  MAP_NULL_ARGUMENT;
     }
 
-    Pair current = map->first_pair;
+    Node current = map->first_node;
     while(map->num_of_elements > 0)
     {
-        Pair temp = pairGetNext(current);
-        pairRemove(current);
+        Node temp = nodeGetNext(current);
+        nodeRemove(current);
         current = temp;
         map->num_of_elements--;
     }
@@ -221,31 +221,28 @@ MapResult mapClear(Map map) {
 }
 
 
-static Pair findPair(Map map, const char* key) {
+static Node findNode(Map map, const char* key) {
     if(map == NULL || key == NULL)
     {
         return  NULL;
     }
-    Pair temp = map->first_pair;
+    Node temp = map->first_node;
     for (int i = 0; i < map->num_of_elements; ++i) {
         assert(temp != NULL);
-        //printf("key: %s\n", key);
-        //printf("pair.Key = %s par.Data = ?\n",pairGetKey(map->first_pair));
 
-
-        if (strcmp(key, pairGetKey(temp)) == 0) {
+        if (strcmp(key, nodeGetKey(temp)) == 0) {
             return temp;
         }
         else
-           // printf("Elad and David: %d\n", strcmp(key, pairGetKey(temp)));
-        temp = pairGetNext(temp);
+           // printf("Elad and David: %d\n", strcmp(key, nodeGetKey(temp)));
+        temp = nodeGetNext(temp);
     }
     return NULL;
 }
 
 static void mapReset(Map map)
 {
-    map->first_pair = NULL;
-    map->last_pair = NULL;
+    map->first_node = NULL;
+    map->last_node = NULL;
     map->iterator = NULL;
 }
