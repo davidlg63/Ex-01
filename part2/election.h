@@ -5,7 +5,7 @@
 #ifndef MTM_ELECTION_H
 #define MTM_ELECTION_H
 
-#include "map.h"
+#include "mtm_map/map.h"
 
 typedef struct election_t* Election;
 
