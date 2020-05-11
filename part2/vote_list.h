@@ -32,5 +32,5 @@ void voteListRemove(VoteList list, int id, VoteListRemoveCandidate remove_candid
 
 VoteNode voteListContainArea(VoteList list, int area_id);
 
-int voteListFindMaxTribe(VoteNode area);
+int voteListFindMaxTribe(VoteNode area, int tribe_id_minimal);
 #endif //ELECTION_VOTE_LIST_H

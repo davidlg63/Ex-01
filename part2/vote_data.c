@@ -13,8 +13,8 @@ struct votedata_t {
 
 VoteData voteDataCreate (int source, int destination, int num_of_votes) {
     VoteData votedata = malloc(sizeof(*votedata));
-    if(votedata==NULL) {
-        votedata=NULL;
+    if(votedata==NULL)
+    {
         return NULL ;
     }
     votedata->source_id=source;
@@ -44,7 +44,8 @@ int voteDataGetNumOfVotes (VoteData current_votedata) {
 }
 
 VoteDataResult voteDataAddOrSubtract (VoteData current_votesdata, int change_num) {
-    if (current_votesdata==NULL ){
+    if (current_votesdata==NULL )
+    {
         return VOTEDATA_NULL_ARRGUMENT;
     }
     current_votesdata->num_of_votes += change_num;

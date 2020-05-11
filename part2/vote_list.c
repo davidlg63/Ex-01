@@ -13,7 +13,6 @@ static VoteNode voteListAreaContainsTribe(VoteNode area, int area_id, int tribe_
 struct vote_list_t
 {
     VoteNode head;
-    int num_of_elements;
 };
 
 VoteList voteListCreate()
@@ -23,9 +22,8 @@ VoteList voteListCreate()
     {
         return NULL;
     }
-
     vote_list->head = NULL;
-    vote_list->num_of_elements = 0;
+    return vote_list;
 }
 
 void voteListDestroy(VoteList list)
@@ -34,7 +32,6 @@ void voteListDestroy(VoteList list)
     {
         return;
     }
-    list->num_of_elements = 0;
     VoteNode current_node = list->head;
     VoteNode temp;
     while(current_node != NULL)
@@ -70,7 +67,7 @@ VoteListResult voteListAdd(VoteList list, int area_id, int tribe_id, int num_of_
             next = voteNodeGetNext(current);
         }
 
-        if(current == NULL)
+        if(current == NULL)//This case means that the list is empty right now.
         {
             list->head = voteNodeCreate(current, area_id, tribe_id, num_of_votes);
             if(list->head == NULL)
@@ -97,7 +94,9 @@ void voteListRemove(VoteList list, int id, VoteListRemoveCandidate remove_candid
     {
         if(remove_candidate == TRIBE)
         {
-            if (voteNodeGetTribeId(current) == id) {
+            if (voteNodeGetTribeId(current) == id)
+            {
+                list->head = (current == list->head) ? next : list->head;
                 voteNodeRemove(current);
             }
         }
@@ -106,6 +105,7 @@ void voteListRemove(VoteList list, int id, VoteListRemoveCandidate remove_candid
         {
             if (voteNodeGetAreaId(current) == id)
             {
+                list->head = (current == list->head) ? next : list->head;
                 voteNodeRemove(current);
             }
         }
@@ -131,17 +131,17 @@ VoteNode voteListContainArea(VoteList list, int area_id)
     return NULL;
 }
 
-int voteListFindMaxTribe(VoteNode node)
+int voteListFindMaxTribe(VoteNode node, int tribe_id_minimal)
 {
     assert(node != NULL);
     int max_tribe_votes = 0, min_tribe_id = 0, current_tribe_votes = 0, current_tribe_id = 0;
-    VoteNode next_node = voteNodeGetNext(node);
-    while(voteNodeGetAreaId(next_node) == voteNodeGetAreaId(node))
+    VoteNode current_node = node;
+    while(voteNodeGetAreaId(current_node) == voteNodeGetAreaId(node))
     {
-        current_tribe_votes = voteNodeGetVotes(node);
+        current_tribe_votes = voteNodeGetVotes(current_node);
         if(current_tribe_votes >= max_tribe_votes)
         {
-            current_tribe_id = voteNodeGetTribeId(node);
+            current_tribe_id = voteNodeGetTribeId(current_node);
             if(current_tribe_votes == max_tribe_votes && current_tribe_id < min_tribe_id)
             {
                 min_tribe_id = current_tribe_id;
@@ -152,10 +152,10 @@ int voteListFindMaxTribe(VoteNode node)
                 min_tribe_id = current_tribe_id;
             }
         }
-        node = next_node;
-        next_node = voteNodeGetNext(node);
+        current_node = voteNodeGetNext(current_node);
     }
 
+    min_tribe_id = (max_tribe_votes == 0) ? tribe_id_minimal : min_tribe_id;
     return min_tribe_id;
 }
 
@@ -170,17 +170,18 @@ static void voteListAddVotesToArea(VoteList list, int area_id, int tribe_id, int
         next = voteNodeGetNext(current);
     }
 
-    if(voteListAreaContainsTribe(current, area_id, tribe_id) != NULL)
+    VoteNode current_tribe = voteListAreaContainsTribe(current, area_id, tribe_id);
+    if(current_tribe != NULL)
     {
-        voteNodeAddVote(current, num_of_votes);
+        voteNodeAddVote(current_tribe, num_of_votes);
     }
     else
     {
-        while(voteNodeGetAreaId(next) == area_id)
+        /*while(voteNodeGetAreaId(next) == area_id)
         {
             current = next;
             next = voteNodeGetNext(current);
-        }
+        }*/
         voteNodeCreate(current, area_id, tribe_id, num_of_votes);
     }
 

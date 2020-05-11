@@ -7,12 +7,14 @@
 #include <stdlib.h>
 #include <assert.h>
 
+
 struct vote_node_t
 {
     VoteData data;
     VoteNode next;
     VoteNode previous;
 };
+
 
 VoteNode voteNodeCreate(VoteNode current, int area_id, int tribe_id, int num_of_votes)
 {
@@ -64,6 +66,7 @@ void voteNodeRemove(VoteNode node)
     }
 
     voteDataRemove(node->data);
+    node->data = NULL;
     node->previous = NULL;
     node->next = NULL;
     free(node);
@@ -81,13 +84,19 @@ VoteNode voteNodeGetNext(VoteNode node)
 
 int voteNodeGetAreaId(VoteNode node)
 {
-    assert(node != NULL);
+    if(node == NULL)
+    {
+        return GET_ID_ERROR;
+    }
     return voteDataGetSource(node->data);
 }
 
 int voteNodeGetTribeId(VoteNode node)
 {
-    assert(node != NULL);
+    if(node == NULL)
+    {
+        return GET_ID_ERROR;
+    }
     return voteDataGetDestination(node->data);
 }
 
