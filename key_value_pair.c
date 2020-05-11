@@ -58,10 +58,7 @@ Pair pairCreate(const char* key, const char* data)
 
 PairResult  pairDestroy(Pair pair)
 {
-    if(pair == NULL)
-    {
-        return PAIR_SUCCESS;
-    }
+    assert(pair != NULL);
     free(pair->data);
     pair->data = NULL;
     free(pair->key);

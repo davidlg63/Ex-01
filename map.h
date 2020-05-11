@@ -186,9 +186,10 @@ MapResult mapClear(Map map);
 * Macro for iterating over a map.
 * Declares a new iterator for the loop.
 */
+
 #define MAP_FOREACH(iterator, map) \
     for(char* iterator = (char*) mapGetFirst(map) ; \
-        iterator ;\
+        iterator != NULL ;\
         iterator = mapGetNext(map))
 
 #endif /* MAP_H_ */
