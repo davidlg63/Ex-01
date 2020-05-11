@@ -1,0 +1,20 @@
+
+GCC = gcc
+OBJS= election.o map.o vote_list.o vote_node.o key_value_pair.o vote_data.o node.o
+EXEC= election
+DEBUG_FLAG= -g DNDBUG
+COMP_FLAG= -std=c99 -wall -werror -pedantic-errors $(DEBUG_FLAG) 
+
+$(EXEC) : $(OBJS)
+	$(GCC) $(DEBUG_FLAG) $(OBJS) -o $@
+
+election.o: election.c election.h map.h vote_list.h vote_node.h
+key_value_pair.o: key_value_pair.c key_value_pair.h
+map.o: map.c map.h node.h
+node.o: node.c node.h map.h key_value_pair.h
+vote_data.o: vote_data.c vote_data.h
+vote_list.o: vote_list.c vote_list.h vote_node.h
+vote_node.o: vote_node.c vote_node.h vote_data.h
+
+clean:
+	rm -f  $(OBJS)
