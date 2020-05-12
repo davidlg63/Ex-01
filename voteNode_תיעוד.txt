@@ -29,6 +29,9 @@ typedef struct vote_node_t* VoteNode;
 /**
  * voteNodeCreate               -  create a new VoteNode struct and returns a pointer to the struct. Allocates the
  *                                 memory for all the struct and connects between the new VoteNode and the previous one.
+ *		when a Node is createde it will be create in a form of a blocks list, which will be arranged
+ *		by the relevant area ID, and if the create VoteNode is the first one from its area, it will be created
+ *		in the last place of the list
  *
  * @param current   - Pointer to the current VoteNode
  * @param area_id   - The Id of the area which the votes originated from
