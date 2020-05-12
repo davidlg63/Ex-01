@@ -1,0 +1,98 @@
+//
+// Created by David on 02/05/2020.
+//
+
+#ifndef ELECTION_VOTE_NODE_H
+#define ELECTION_VOTE_NODE_H
+// ...................defines......................................
+#define GET_ID_ERROR -1
+
+/**
+ * Implements a VoteNode container type.
+ * The type of the next and previous are pointers to a VoteNode, and the data is a VoteData struct.
+ *
+ *  *  The following functions are available:
+ *
+ *      voteNodeCreate      -   create a new VoteNode struct and returns a pointer to the struct.
+ *      voteNodeRemove      -   removes the VoteNode that matches the given pointer and freeing the allocated memory.
+ *      voteNodeGetNext     -   returns the next pointer following the given one on the list.
+ *      voteNodeGetAreaId   -   returns the value of the area's Id which stored in the data of the current VoteNode.
+ *      voteNodeGetTribeId  -   returns the value of the tribe's id which stored in the data of the current VoteNode.
+ *      voteNodeAddVote     -   adding or removing (depends on the user's request) votes from the current amount stored.
+ *      voteNodeGetVotes    -   returns the value of the number of votes from the current area to the certain tribe.
+ *
+ */
+
+/** Type for defining the data of the VOteNode */
+typedef struct vote_node_t* VoteNode;
+
+/**
+ * voteNodeCreate               -  create a new VoteNode struct and returns a pointer to the struct. Allocates the
+ *                                 memory for all the struct and connects between the new VoteNode and the previous one.
+ *
+ * @param current   - Pointer to the current VoteNode
+ * @param area_id   - The Id of the area which the votes originated from
+ * @param tribe_id  - The Id of the tribe to which to votes belong
+ * @param num_of_votes - The number of that were counted from the area to the tribe.
+ * @return
+ * NUll- if any of the connected memory allocations failed.
+ * Pointer to the create struct VoteNode
+ */
+VoteNode voteNodeCreate(VoteNode current, int area_id, int tribe_id, int num_of_votes);
+
+/**
+ * voteNodeRemove      -   removes the VoteNode that matches the given pointer and freeing the allocated memory.
+ *
+ * @param node - Pointer to the struct that will be freed
+ * no return values
+ */
+void voteNodeRemove(VoteNode node);
+/**
+ * voteNodeGetNext     -   returns the next pointer following the given one on the list.
+ *
+ * @param node - Pointer to the current struct, which is the previous in regards to the return value.
+ * @return
+ * NULL- if a NULL was sent to the function.
+ * Pointer to the next struct VoteNode.
+ */
+VoteNode voteNodeGetNext(VoteNode node);
+
+/**
+ *  voteNodeGetAreaId   -   returns the value of the area's Id which stored in the data of the current VoteNode.
+ *
+ * @param node  - Pointer to the current struct, in which the requested value is being stored
+ * @return
+ * GET_ID_ERROR if an illegal value was given
+ * The value of the stored Area's Id.
+ */
+int voteNodeGetAreaId(VoteNode node);
+
+/**
+ *  voteNodeGetTribeId   -   returns the value of the tribe's id which stored in the data of the current VoteNode.
+ *
+ * @param node  - Pointer to the current struct, in which the requested value is being stored
+ * @return
+ * GET_ID_ERROR if an illegal value was given
+ * The value of the stored tribes's Id.
+ */
+
+int voteNodeGetTribeId(VoteNode node);
+
+ /**
+  * voteNodeAddVote     -       this function will determine on the basis of the value that's been given to it whether
+  *                             its gaol is to subtract votes from the tribe or add to the current ones.
+  * @param node         - Pointer to the current struct, in which the data that will be changed  is being stored.
+  * @param num_of_votes - the number of votes which will be subtracted(if it's negative) or add (if it's positive)
+  */
+void  voteNodeAddVote(VoteNode node, int num_of_votes);
+
+/**
+ *  voteNodeGetVotes   -   returns the value of the number of votes from the current area to the certain tribe.
+ *
+ * @param node  - Pointer to the current struct, in which the requested value is being stored
+ * @return
+ * GET_ID_ERROR if an illegal value was given
+ * The total number of votes given  to a certain tribe from the area (both Id are stored as well).
+ */
+int voteNodeGetVotes(VoteNode node);
+#endif //ELECTION_VOTE_NODE_H
